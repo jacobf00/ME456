@@ -1,0 +1,21 @@
+clc,clear,close
+
+%Initialize Robot
+
+p = [-.2 .1]; %Desired end effector pose
+
+DH = [0 0 0 pi/2;
+      90*pi/180 0 0 pi;
+      pi/2 0 0 pi/2;
+      0 .15 0 0];
+
+L(1) = Link(,'modified','revolute');
+L(1).qlim = [-150 150]*pi/180;
+L(2) = Link(DH_Params,'modified','prismatic');
+L(2).jointtype = 'P';
+robot = SerialLink(L);
+T_2T = transl(1,0,0);
+robot.tool = T_2T;
+
+figure
+robot.plot([0 0])
