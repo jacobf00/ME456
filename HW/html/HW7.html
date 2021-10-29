@@ -1,0 +1,307 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HW7</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-10-27"><meta name="DC.source" content="HW7.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">teach</a></li><li><a href="#3">Prob 3</a></li><li><a href="#4">3c</a></li></ul></div><pre class="codeinput">clc,clear,close
+
+<span class="comment">%Initialize Robot</span>
+
+p = [-.2 .1]; <span class="comment">%Desired end effector pose</span>
+
+DH = [0 0 0 pi/2;
+      pi/2 0 .3 pi;
+      pi/2 0 0 pi/2;
+      0 .15 0 0];
+
+DH = flip_rows(DH);
+
+L(1) = Link(DH(1,:),<span class="string">'modified'</span>,<span class="string">'revolute'</span>);
+L(1).qlim = [30 330]*pi/180;
+L(2) = Link(DH(2,:),<span class="string">'modified'</span>,<span class="string">'prismatic'</span>);
+L(2).jointtype = <span class="string">'P'</span>;
+L(2).qlim = [.1 .4];
+L(3) = Link(DH(3,:),<span class="string">'modified'</span>,<span class="string">'revolute'</span>);
+L(3).qlim = [-45 225]*pi/180;
+robot = SerialLink(L);
+T_3T = transl(.15,0,0);
+robot.tool = T_3T;
+
+<span class="comment">%figure</span>
+<span class="comment">%robot.plot([pi/2 .3 pi/2])</span>
+
+<span class="comment">%goal transformation</span>
+</pre><h2 id="2">teach</h2><pre class="codeinput">clc
+
+T0G = transl(-.2,.1,0)*trotz(pi);
+mask = [1 1 0 0 0 1];
+q0 = robot.getpos()
+
+q = robot.ikine(T0G,<span class="string">'q0'</span>,q0,<span class="string">'mask'</span>,mask)
+
+figure
+robot.plot(q)
+hold <span class="string">on</span>
+trplot(T0G)
+</pre><pre class="codeoutput">
+q0 =
+
+   -2.6779    0.1118    2.6779
+
+
+q =
+
+   -2.6779    0.1118    2.6779
+
+</pre><img vspace="5" hspace="5" src="HW7_01.png" alt=""> <img vspace="5" hspace="5" src="HW7_02.png" alt=""> <h2 id="3">Prob 3</h2><pre class="codeinput">syms <span class="string">x</span> <span class="string">y</span> <span class="string">phi</span> <span class="string">q1</span> <span class="string">q2</span> <span class="string">q3</span>
+
+DH = [0 0 0 q1;
+      pi/2 0 q2 pi;
+      pi/2 0 0 q3;
+      0 .15 0 0];
+
+T04G = transl(x,y,0)*trotz(phi);
+T34 = transl(.15,0,0);
+
+T03G = T04G * inv(T34)
+
+T01 = modDH2(DH(1,:));
+T12 = modDH2(DH(2,:));
+T23 = modDH2(DH(3,:));
+T34 = modDH2(DH(4,:));
+
+T03 = T01*T12*T23
+
+eq1 = x - (3/20)*cos(phi) == q2*sin(q1);
+eq2 = y - (3/20)*sin(phi) == -q2*cos(q1);
+
+[q1sol,q2sol] = solve(eq1,eq2,q1,q2);
+
+q1sol = simplify(q1sol);
+q2sol = simplify(q2sol);
+</pre><pre class="codeoutput"> 
+T03G =
+ 
+[cos(phi), -sin(phi), 0, x - (3*cos(phi))/20]
+[sin(phi),  cos(phi), 0, y - (3*sin(phi))/20]
+[       0,         0, 1,                   0]
+[       0,         0, 0,                   1]
+ 
+ 
+T03 =
+ 
+[  sin(q1)*sin(q3) - cos(q1)*cos(q3), cos(q1)*sin(q3) + cos(q3)*sin(q1), 0,  q2*sin(q1)]
+[- cos(q1)*sin(q3) - cos(q3)*sin(q1), sin(q1)*sin(q3) - cos(q1)*cos(q3), 0, -q2*cos(q1)]
+[                                  0,                                 0, 1,           0]
+[                                  0,                                 0, 0,           1]
+ 
+</pre><h2 id="4">3c</h2><pre class="codeinput"><span class="comment">%solving inverse kinematics and possible qs for goal pose</span>
+clc
+
+p = [-0.2 .1 pi];
+
+x = p(1);
+y = p(2);
+phi = p(3);
+
+q2_p = sqrt((x-(3/20)*cos(phi))^2 + (y-(3/20)*sin(phi))^2);
+q2_n = -sqrt((x-(3/20)*cos(phi))^2 + (y-(3/20)*sin(phi))^2);
+
+q1_p = atan2((x-(3/20)*cos(phi))/q2_p,(-y+(3/20)*sin(phi))/q2_p);
+q1_n = atan2((x-(3/20)*cos(phi))/q2_n,(-y+(3/20)*sin(phi))/q2_n);
+
+q3_p = atan2(-sin(phi),-cos(phi)) - q1_p;
+q3_n = atan2(-sin(phi),-cos(phi)) - q1_n;
+
+q_p = [q1_p q2_p q3_p]
+q_n = [q1_n q2_n q3_n]
+
+T04 = robot.fkine(q_p)
+robot.plot(q_p)
+hold <span class="string">on</span>
+T0G = transl(-.2,.1,0)*trotz(pi);
+trplot(T0G)
+</pre><pre class="codeoutput">
+q_p =
+
+   -2.6779    0.1118    2.6779
+
+
+q_n =
+
+    0.4636   -0.1118   -0.4636
+
+ 
+
+T04 = 
+        -1         0         0      -0.2
+         0        -1         0       0.1
+         0         0         1         0
+         0         0         0         1
+</pre><img vspace="5" hspace="5" src="HW7_03.png" alt=""> <img vspace="5" hspace="5" src="HW7_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc,clear,close
+
+%Initialize Robot
+
+p = [-.2 .1]; %Desired end effector pose
+
+DH = [0 0 0 pi/2;
+      pi/2 0 .3 pi;
+      pi/2 0 0 pi/2;
+      0 .15 0 0];
+  
+DH = flip_rows(DH);
+
+L(1) = Link(DH(1,:),'modified','revolute');
+L(1).qlim = [30 330]*pi/180;
+L(2) = Link(DH(2,:),'modified','prismatic');
+L(2).jointtype = 'P';
+L(2).qlim = [.1 .4];
+L(3) = Link(DH(3,:),'modified','revolute');
+L(3).qlim = [-45 225]*pi/180;
+robot = SerialLink(L);
+T_3T = transl(.15,0,0);
+robot.tool = T_3T;
+
+%figure
+%robot.plot([pi/2 .3 pi/2])
+
+%goal transformation
+%% teach
+clc
+
+T0G = transl(-.2,.1,0)*trotz(pi);
+mask = [1 1 0 0 0 1];
+q0 = robot.getpos()
+
+q = robot.ikine(T0G,'q0',q0,'mask',mask)
+
+figure
+robot.plot(q)
+hold on
+trplot(T0G)
+
+%% Prob 3
+syms x y phi q1 q2 q3
+
+DH = [0 0 0 q1;
+      pi/2 0 q2 pi;
+      pi/2 0 0 q3;
+      0 .15 0 0];
+
+T04G = transl(x,y,0)*trotz(phi);
+T34 = transl(.15,0,0);
+
+T03G = T04G * inv(T34)
+
+T01 = modDH2(DH(1,:));
+T12 = modDH2(DH(2,:));
+T23 = modDH2(DH(3,:));
+T34 = modDH2(DH(4,:));
+
+T03 = T01*T12*T23
+
+eq1 = x - (3/20)*cos(phi) == q2*sin(q1);
+eq2 = y - (3/20)*sin(phi) == -q2*cos(q1);
+
+[q1sol,q2sol] = solve(eq1,eq2,q1,q2);
+
+q1sol = simplify(q1sol);
+q2sol = simplify(q2sol);
+
+%% 3c
+%solving inverse kinematics and possible qs for goal pose
+clc
+
+p = [-0.2 .1 pi];
+
+x = p(1);
+y = p(2);
+phi = p(3);
+
+q2_p = sqrt((x-(3/20)*cos(phi))^2 + (y-(3/20)*sin(phi))^2);
+q2_n = -sqrt((x-(3/20)*cos(phi))^2 + (y-(3/20)*sin(phi))^2);
+
+q1_p = atan2((x-(3/20)*cos(phi))/q2_p,(-y+(3/20)*sin(phi))/q2_p);
+q1_n = atan2((x-(3/20)*cos(phi))/q2_n,(-y+(3/20)*sin(phi))/q2_n);
+
+q3_p = atan2(-sin(phi),-cos(phi)) - q1_p;
+q3_n = atan2(-sin(phi),-cos(phi)) - q1_n;
+
+q_p = [q1_p q2_p q3_p]
+q_n = [q1_n q2_n q3_n]
+
+T04 = robot.fkine(q_p)
+robot.plot(q_p)
+hold on
+T0G = transl(-.2,.1,0)*trotz(pi);
+trplot(T0G)
+
+
+##### SOURCE END #####
+--></body></html>
