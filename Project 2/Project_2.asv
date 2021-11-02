@@ -193,7 +193,7 @@ T5T = transl(0, 0, -19.5);
 robot.tool = T5T;
 robot.base = [0,0,7.5];
 
-robot.teach()
+robot.teach
 hold on 
 trplot(T_BT_G,'length',10)
 
@@ -271,7 +271,6 @@ q0s(4,:) = [1.3963   -1.7628    0.0314   -0.7226    0.4084]; % third guess
 %% Solve numerical and check if viable
 
 qs = zeros(num_guesses,5);
-viables = zeros(num_guesses,1);
 
 minMax = [80 260;
           -170 -20;
@@ -284,8 +283,8 @@ mask = [1 1 1 0 1 1];
 
 for i=1:num_guesses
     
-    q = robot.ikine(T_BT_G,'q0',q0s(i,:),'mask',mask);
-    qs(i,:) = q;
+    q = robot.ikine(T_BT_G,'q0',q0,'mask',mask)
+    q(i,:) = q
     hold on
     trplot(T_BT_G,'length',10)
     robot.plot(q)
@@ -295,13 +294,10 @@ for i=1:num_guesses
 
     thetaOi = (thetaRi - thetaDHi);
 
-    qdeg = q*180/pi;
-    ThetaRi = qdeg+thetaOi;
+    qdeg = q*180/pi
+    ThetaRi = qdeg+thetaOi
 
-    viable = isViable(q,minMax,'rad');
-    viables(i,1) = viable;
-    hold off
-end
+    viable = isViable(q,minMax,'rad')
 
 %% To top of block
 clc, clear, close all
