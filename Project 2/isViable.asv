@@ -13,21 +13,21 @@ if(type=='rad')
 end
 
 for i=1:numRows
-    min = minMaxDH(i,1) - 5;
-    max = minMaxDH(i,2) + 5;
-    if(q(i) >= min && q(i) <= max)
+    min = minMaxDH(i,1);
+    max = minMaxDH(i,2);
+    if(q(i) > min && q(i) < max)
         viable = viable + 1;
         original_viable = original_viable + 1;
     else
-        if(q(i) <= -180)
+        if(q(i) < -180)
             q(i) = q(i) + 360;
-            if(q(i) >= min && q(i) <= max)
+            if(q(i) > min && q(i) < max)
                 viable = viable + 1;
                 negative_viable = negative_viable + 1;
             end
-        elseif(q(i) >= 180)
+        elseif(q(i) > 180)
             q(i) = q(i) - 360;
-            if(q(i) >= min && q(i) <= max)
+            if(q(i) > min && q(i) < max)
                 viable = viable + 1;
                 positive_viable = positive_viable + 1;
             end
@@ -37,7 +37,7 @@ for i=1:numRows
 end
 
 viable
-if viable == 4
+if viable == 5
     viable = 1;
 else
     viable = 0;

@@ -202,7 +202,7 @@ trplot(T_BT_G,'length',10)
 
 % q0 = robot.getpos
 % q0 = [3.1241   -2.4609    0.8482   -1.5080   -0.7540]; % first guess
-q0 = [3.6582   -1.5272   -1.3509   -0.3770   -1.2252]; % second guess
+% q0 = [3.6582   -1.5272   -1.3509   -0.3770   -1.2252]; % second guess
 % q0 = [1.3963   -1.7628    0.0314   -0.7226    0.4084]; % third guess
 %% Solve numerical
 
@@ -260,13 +260,17 @@ hold on
 trplot(T_BT_G,'length',10)
 
 %% get guess
-num_guesses = 4;
+num_guesses = 8;
 q0s = zeros(num_guesses,5);
 % q0 = robot.getpos
-q0s(1,:) = [2.3387   -2.4435   -0.7854   -1.8850         0];
-q0s(2,:) = [3.1241   -2.4609    0.8482   -1.5080   -0.7540]; % first guess
-q0s(3,:) = [3.6582   -1.5272   -1.3509   -0.3770   -1.2252]; % second guess
-q0s(4,:) = [1.3963   -1.7628    0.0314   -0.7226    0.4084]; % third guess
+q0s(1,:) = [3.1241   -2.4609    0.8482   -1.5080   -0.7540]; % first guess
+q0s(2,:) = [3.6582   -1.5272   -1.3509   -0.3770   -1.2252]; % second guess
+q0s(3,:) = [0    5.0265    5.2150    5.6549         0]; % third guess
+q0s(4,:) = [0.1885    4.4611    1.2566    3.7699    2.5133]; % fourth guess
+q0s(5,:) = [3.1416    5.0265    4.3982         0    2.5133]; % fith guess guess
+q0s(6,:) = [2.5133    3.1416    1.2566    5.0265    2.5133]; % sixth guess guess
+q0s(7,:) = [0    5.6549    5.0265    5.0265    5.0265]; % seventh guess guess
+q0s(8,:) = [0    4.3982    0.6283    4.3982    5.0265]; % eighth guess guess
 
 %% Solve numerical and check if viable
 
@@ -285,6 +289,7 @@ mask = [1 1 1 0 1 1];
 for i=1:num_guesses
     
     q = robot.ikine(T_BT_G,'q0',q0s(i,:),'mask',mask);
+    q = round(q,4);
     qs(i,:) = q;
     hold on
     trplot(T_BT_G,'length',10)
@@ -302,7 +307,8 @@ for i=1:num_guesses
     viables(i,1) = viable;
     hold off
 end
-
+qs
+viables
 %% To top of block
 clc, clear, close all
 
