@@ -250,7 +250,7 @@ L(4).qlim = [-180 0].*pi/180;
 L(5) = Link([Flipped_dh(5,1),Flipped_dh(5,2),Flipped_dh(5,3),Flipped_dh(5,4)],'modified','revolute');
 L(5).qlim = [-90 90].*pi/180;
 
-robot = SerialLink(L);
+robot = SerialLink2(L);
 T5T = transl(0, 0, -19.5);
 robot.tool = T5T;
 robot.base = [0,0,7.5];
@@ -283,12 +283,20 @@ minMax = [80 260;
           -180 0;
           -90 90];
 %grab block
-T_BT_G = transl(25.5,23,1.25)*trotz(-140,'deg')*troty(90,'deg')
-mask = [1 1 1 0 1 1];
+% T_BT_G = transl(25.5,23,1.25)*trotz(-140,'deg')*troty(90,'deg');
+T_BT_G = transl(5,-5,45)*trotz(atan2(-5,5))*troty(180,'deg')*trotz(90,'deg');
+% mask = [1 1 1 0 1 1];
+
+ThetaRis = zeros(num_guesses,5);
 
 for i=1:num_guesses
     
-    q = robot.ikine(T_BT_G,'q0',q0s(i,:),'mask',mask);
+    if i == 5
+        T_BT_G = transl(5,-5,45)*trotz(atan2(-5,5)+pi)*troty(180,'deg')*trotz(90,'deg');
+    end
+    
+%     q = robot.ikine(T_BT_G,'q0',q0s(i,:),'mask',mask);
+    q = robot.ikine(T_BT_G,'q0',q0s(i,:));
     q = round(q,4);
     qs(i,:) = q;
     hold on
@@ -302,11 +310,14 @@ for i=1:num_guesses
 
     qdeg = q*180/pi;
     ThetaRi = qdeg+thetaOi;
+    ThetaRis(i,:) = round(ThetaRi);
+    
 
     viable = isViable(q,minMax,'rad');
     viables(i,1) = viable;
     hold off
 end
+ThetaDHs = round(qs.*(180/pi));
 qs
 viables
 %% To top of block

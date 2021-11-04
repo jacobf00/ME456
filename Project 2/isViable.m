@@ -37,7 +37,7 @@ for i=1:numRows
 end
 
 viable
-if viable == 4
+if viable == 5
     viable = 1;
 else
     viable = 0;
