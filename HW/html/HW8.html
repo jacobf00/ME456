@@ -1,0 +1,380 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HW8</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-11-10"><meta name="DC.source" content="HW8.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">1a</a></li><li><a href="#3">2a,2b</a></li><li><a href="#4">2c</a></li><li><a href="#5">Problem 3</a></li></ul></div><pre class="codeinput">clc,clear,close
+</pre><h2 id="2">1a</h2><pre class="codeinput">syms <span class="string">q1</span> <span class="string">dq1</span> <span class="string">q2</span> <span class="string">dq2</span> <span class="string">q3</span> <span class="string">dq3</span> <span class="string">real</span>
+
+T01 = modDH(0,0,0,q1);
+T12 = modDH(pi/2,40,0,q2);
+T23 = modDH(0,40,0,q3);
+T34 = modDH(0,15,0,0);
+
+v11 = [0 0 0]';
+w11 = [0 0 dq1]';
+
+v22 = T12(1:3,1:3)'*(v11+cross(w11,T12(1:3,4)));
+w22 = T12(1:3,1:3)'*w11 + [0 0 dq2]';
+
+v33 = T23(1:3,1:3)'*(v22+cross(w22,T23(1:3,4)));
+w33 = T23(1:3,1:3)'*w22 + [0 0 dq3]';
+
+v44 = T34(1:3,1:3)'*(v33+cross(w33,T34(1:3,4)));
+w44 = T34(1:3,1:3)'*w33;
+
+T04 = T01*T12*T23*T34;
+v04 = simplify(T04(1:3,1:3)*v44)
+w04 = simplify(T04(1:3,1:3)*w44)
+
+nu04 = [v04;w04];
+
+J = simplify(jacobian(nu04,[dq1 dq2 dq3]))
+
+<span class="comment">%verify velocities are same</span>
+vAll = simplify(J*[dq1 dq2 dq3]');
+</pre><pre class="codeoutput"> 
+v04 =
+ 
+40*dq2*cos(q2 + q3)*cos(q1)*sin(q3) - sin(q2 + q3)*cos(q1)*(15*dq2 + 15*dq3 + 40*dq2*cos(q3)) - 5*dq1*sin(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8)
+5*dq1*cos(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8) - sin(q2 + q3)*sin(q1)*(15*dq2 + 15*dq3 + 40*dq2*cos(q3)) + 40*dq2*cos(q2 + q3)*sin(q1)*sin(q3)
+                                                                                    15*dq2*cos(q2 + q3) + 15*dq3*cos(q2 + q3) + 40*dq2*cos(q2)
+ 
+ 
+w04 =
+ 
+ sin(q1)*(dq2 + dq3)
+-cos(q1)*(dq2 + dq3)
+                 dq1
+ 
+ 
+J =
+ 
+[-5*sin(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*cos(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*cos(q1)]
+[ 5*cos(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*sin(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*sin(q1)]
+[                                          0,            15*cos(q2 + q3) + 40*cos(q2),          15*cos(q2 + q3)]
+[                                          0,                                 sin(q1),                  sin(q1)]
+[                                          0,                                -cos(q1),                 -cos(q1)]
+[                                          1,                                       0,                        0]
+ 
+</pre><h2 id="3">2a,2b</h2><pre class="codeinput">clc,clear <span class="string">close</span>
+
+
+q = [98 21 78]*pi/180;
+dq = [.7 -.2 .6];
+
+q1 = q(1);
+q2 = q(2);
+q3 = q(3);
+
+dq1 = dq(1);
+dq2 = dq(2);
+dq3 = dq(3);
+
+
+T01 = modDH(0,0,0,q1);
+T12 = modDH(pi/2,40,0,q2);
+T23 = modDH(0,40,0,q3);
+T34 = modDH(0,15,0,0);
+
+
+v11 = [0 0 0]';
+w11 = [0 0 dq1]';
+
+v22 = T12(1:3,1:3)'*(v11+cross(w11,T12(1:3,4)));
+w22 = T12(1:3,1:3)'*w11 + [0 0 dq2]';
+
+v33 = T23(1:3,1:3)'*(v22+cross(w22,T23(1:3,4)));
+w33 = T23(1:3,1:3)'*w22 + [0 0 dq3]';
+
+v44 = T34(1:3,1:3)'*(v33+cross(w33,T34(1:3,4)));
+w44 = T34(1:3,1:3)'*w33;
+
+T04 = T01*T12*T23*T34;
+v04 = T04(1:3,1:3)*v44;
+w04 = T04(1:3,1:3)*w44;
+
+nu04 = [v04;w04]
+
+J = [-5*sin(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*cos(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*cos(q1);
+      5*cos(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*sin(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*sin(q1);
+                                          0,            15*cos(q2 + q3) + 40*cos(q2),          15*cos(q2 + q3);
+                                          0,                                 sin(q1),                  sin(q1);
+                                          0,                                -cos(q1),                 -cos(q1);
+                                          1,                                       0,                        0];
+</pre><pre class="codeoutput">
+nu04 =
+
+  -51.5610
+  -10.3357
+   -8.4073
+    0.3961
+    0.0557
+    0.7000
+
+</pre><h2 id="4">2c</h2><pre class="codeinput">clc,clear
+
+q = [98 21 78]*pi/180;
+dq = [.7 -.2 .6];
+
+q1 = q(1);
+q2 = q(2);
+q3 = q(3);
+
+dq1 = dq(1);
+dq2 = dq(2);
+dq3 = dq(3);
+
+
+T01 = modDH(0,0,0,q1);
+T12 = modDH(pi/2,40,0,q2);
+T23 = modDH(0,40,0,q3);
+T34 = modDH(0,15,0,0);
+
+
+
+J = [-5*sin(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*cos(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*cos(q1);
+      5*cos(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*sin(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*sin(q1);
+                                          0,            15*cos(q2 + q3) + 40*cos(q2),          15*cos(q2 + q3)];
+nu04 = [-4 8 3]';
+
+<span class="comment">%verify velocities are same</span>
+
+
+dq_from_J = J\nu04
+</pre><pre class="codeoutput">
+dq_from_J =
+
+    0.0380
+    0.0418
+   -0.6546
+
+</pre><h2 id="5">Problem 3</h2><pre class="codeinput">clc,clear
+
+q = [90 90 0]*pi/180;
+dq = [0 0 1];
+
+q1 = q(1);
+q2 = q(2);
+q3 = q(3);
+
+dq1 = dq(1);
+dq2 = dq(2);
+dq3 = dq(3);
+
+
+
+J = [-5*sin(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*cos(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*cos(q1);
+      5*cos(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*sin(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*sin(q1);
+                                          0,            15*cos(q2 + q3) + 40*cos(q2),          15*cos(q2 + q3)];
+v04 = J*dq'
+</pre><pre class="codeoutput">
+v04 =
+
+   -0.0000
+  -15.0000
+    0.0000
+
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc,clear,close
+
+%% 1a
+syms q1 dq1 q2 dq2 q3 dq3 real
+
+T01 = modDH(0,0,0,q1);
+T12 = modDH(pi/2,40,0,q2);
+T23 = modDH(0,40,0,q3);
+T34 = modDH(0,15,0,0);
+
+v11 = [0 0 0]';
+w11 = [0 0 dq1]';
+
+v22 = T12(1:3,1:3)'*(v11+cross(w11,T12(1:3,4)));
+w22 = T12(1:3,1:3)'*w11 + [0 0 dq2]';
+
+v33 = T23(1:3,1:3)'*(v22+cross(w22,T23(1:3,4)));
+w33 = T23(1:3,1:3)'*w22 + [0 0 dq3]';
+
+v44 = T34(1:3,1:3)'*(v33+cross(w33,T34(1:3,4)));
+w44 = T34(1:3,1:3)'*w33;
+
+T04 = T01*T12*T23*T34;
+v04 = simplify(T04(1:3,1:3)*v44)
+w04 = simplify(T04(1:3,1:3)*w44)
+
+nu04 = [v04;w04];
+
+J = simplify(jacobian(nu04,[dq1 dq2 dq3]))
+
+%verify velocities are same
+vAll = simplify(J*[dq1 dq2 dq3]');
+
+%% 2a,2b
+clc,clear close
+
+
+q = [98 21 78]*pi/180;
+dq = [.7 -.2 .6];
+
+q1 = q(1);
+q2 = q(2);
+q3 = q(3);
+
+dq1 = dq(1);
+dq2 = dq(2);
+dq3 = dq(3);
+
+
+T01 = modDH(0,0,0,q1);
+T12 = modDH(pi/2,40,0,q2);
+T23 = modDH(0,40,0,q3);
+T34 = modDH(0,15,0,0);
+
+
+v11 = [0 0 0]';
+w11 = [0 0 dq1]';
+
+v22 = T12(1:3,1:3)'*(v11+cross(w11,T12(1:3,4)));
+w22 = T12(1:3,1:3)'*w11 + [0 0 dq2]';
+
+v33 = T23(1:3,1:3)'*(v22+cross(w22,T23(1:3,4)));
+w33 = T23(1:3,1:3)'*w22 + [0 0 dq3]';
+
+v44 = T34(1:3,1:3)'*(v33+cross(w33,T34(1:3,4)));
+w44 = T34(1:3,1:3)'*w33;
+
+T04 = T01*T12*T23*T34;
+v04 = T04(1:3,1:3)*v44;
+w04 = T04(1:3,1:3)*w44;
+
+nu04 = [v04;w04]
+
+J = [-5*sin(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*cos(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*cos(q1);
+      5*cos(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*sin(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*sin(q1);
+                                          0,            15*cos(q2 + q3) + 40*cos(q2),          15*cos(q2 + q3);
+                                          0,                                 sin(q1),                  sin(q1);
+                                          0,                                -cos(q1),                 -cos(q1);
+                                          1,                                       0,                        0];
+ 
+%% 2c
+clc,clear
+
+q = [98 21 78]*pi/180;
+dq = [.7 -.2 .6];
+
+q1 = q(1);
+q2 = q(2);
+q3 = q(3);
+
+dq1 = dq(1);
+dq2 = dq(2);
+dq3 = dq(3);
+
+
+T01 = modDH(0,0,0,q1);
+T12 = modDH(pi/2,40,0,q2);
+T23 = modDH(0,40,0,q3);
+T34 = modDH(0,15,0,0);
+
+
+
+J = [-5*sin(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*cos(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*cos(q1);
+      5*cos(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*sin(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*sin(q1);
+                                          0,            15*cos(q2 + q3) + 40*cos(q2),          15*cos(q2 + q3)];
+nu04 = [-4 8 3]';
+
+%verify velocities are same
+
+
+dq_from_J = J\nu04
+
+
+%% Problem 3
+clc,clear
+
+q = [90 90 0]*pi/180;
+dq = [0 0 1];
+
+q1 = q(1);
+q2 = q(2);
+q3 = q(3);
+
+dq1 = dq(1);
+dq2 = dq(2);
+dq3 = dq(3);
+
+
+
+J = [-5*sin(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*cos(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*cos(q1);
+      5*cos(q1)*(3*cos(q2 + q3) + 8*cos(q2) + 8), -5*sin(q1)*(3*sin(q2 + q3) + 8*sin(q2)), -15*sin(q2 + q3)*sin(q1);
+                                          0,            15*cos(q2 + q3) + 40*cos(q2),          15*cos(q2 + q3)];
+v04 = J*dq'
+
+
+##### SOURCE END #####
+--></body></html>
