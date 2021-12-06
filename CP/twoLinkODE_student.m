@@ -1,4 +1,4 @@
-function dy = twoLinkODE_student(t,y)
+function [dy,K,V] = twoLinkODE_student(t,y)
 
 %% Set up
 L1 = 1;
@@ -18,8 +18,8 @@ q1 = y(1);
 q2 = y(2);
 dq1 = y(3);
 dq2 = y(4);
-q = [1:2];
-dq = [3:4];
+q = y(1:2);
+dq = y(3:4);
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Mass matrix
@@ -45,25 +45,29 @@ G = [
 %% Torque
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % define torque here
-tau = 0;
+tau = [0; 0];
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% EOM
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % define EOM here
 % define dy
-dy = [dq; inv(M)*(tau - C*dq - G)]
+dy = [dq; M\(tau - C*dq - G)];
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% For part c) - Kinetic energy
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % calculate kinetic energy here
-
+% for i=1:length(t)
+    K = 1/2*dq'*M*dq;
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% For part c) - Potential energy
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % calculate potential energy here
-V = m1*g*p1*s1 + m2*g*(p2*(cos(q1)*sin(q2) + cos(q2)*sin(q1)) + L1*sin(q1))
+% for i=1:length(t)
+    V = m1*g*p1*sin(q1) + m2*g*(p2*(cos(q1)*sin(q2) + cos(q2)*sin(q1)) + L1*sin(q1));
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 

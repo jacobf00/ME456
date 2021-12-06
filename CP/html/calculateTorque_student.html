@@ -1,0 +1,229 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>calculateTorque_student</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-12-06"><meta name="DC.source" content="calculateTorque_student.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Set up</a></li><li><a href="#4">Mass matrix</a></li><li><a href="#5">C matrix</a></li><li><a href="#6">Gravity vector</a></li><li><a href="#7">Desired motion</a></li><li><a href="#8">Error</a></li><li><a href="#9">Feedback Torque</a></li><li><a href="#10">Feedforward Torque</a></li><li><a href="#11">Total Torque</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [tau, tauFF, tauFB, e, qd] = calculateTorque_student(t,y)
+</pre><pre class="codeinput"><span class="comment">% Calculate torque for the two link robot using computed torque control</span>
+<span class="comment">% Inputs:</span>
+<span class="comment">% ~ t: current time, a scalar</span>
+<span class="comment">% ~ y: current state, a 4 x 1 vector, [q1 q2 dq1 dq2]</span>
+<span class="comment">% Ouputs:</span>
+<span class="comment">% ~ tau: total joint torque</span>
+<span class="comment">% ~ tauFF: the feedforward portion of the joint torque</span>
+<span class="comment">% ~ taueFB: the feedback portion of the joint torque</span>
+<span class="comment">% ~ e: the error</span>
+<span class="comment">% ~ qd: desired joint angles</span>
+</pre><h2 id="3">Set up</h2><pre class="codeinput">L1 = 1;
+L2 = L1;
+p1 = L1/2;
+p2 = L2/2;
+m1 = 12;
+m2 = m1;
+I1 = 1;
+I2 = I1;
+g = 9.8;
+T = 2; <span class="comment">%sec</span>
+
+q1  = y(1);
+q2  = y(2);
+dq1 = y(3);
+dq2 = y(4);
+
+<span class="comment">%%%%%%%%%%% Define q and dq %%%%%%%%%%%</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in calculateTorque_student (line 25)
+q1  = y(1);
+</pre><h2 id="4">Mass matrix</h2><pre class="codeinput">m11 = m2*L1^2 + 2*m2*cos(q2)*L1*p2 + m1*p1^2 + m2*p2^2 + I1 + I2;
+m12 = m2*p2^2 + L1*m2*cos(q2)*p2 + I2;
+m22 = m2*p2^2 + I2;
+
+M = [m11 m12; m12 m22];
+</pre><h2 id="5">C matrix</h2><pre class="codeinput">c11 = -2*L1*dq2*m2*p2*sin(q2);
+c12 = -L1*dq2*m2*p2*sin(q2);
+c21 = (L1*m2*p2*sin(q2)*(2*dq1 - dq2))/2;
+c22 = (L1*dq1*m2*p2*sin(q2))/2;
+
+C = [c11 c12; c21 c22];
+</pre><h2 id="6">Gravity vector</h2><pre class="codeinput">G = [
+ g*m2*(p2*cos(q1 + q2) + L1*cos(q1)) + g*m1*p1*cos(q1)
+                                  g*m2*p2*cos(q1 + q2)];
+</pre><h2 id="7">Desired motion</h2><pre class="codeinput"><span class="comment">%%%%%%%%%%% Equations describing the desired joint position (qd), velocity</span>
+<span class="comment">%%%%%%%%%%% (dqd), and acceleration (ddqd) %%%%%%%%%%%</span>
+q1d = (3*pi/T^5)*t.^5 - (15*pi/2*T^4)*t.^4 + (5*pi/T^3)*t.^3;
+q2d = -(3*pi/2*T^5)*t.^5 + (15*pi/4*T^4)*t.^4 - (5*pi/2*T^3)*t.^3;
+
+q1dcoeff = [(3*pi)/T^5 (-15*pi)/(2*T^4) (5*pi)/T^3 0 0 0];
+q2dcoeff = [(-3*pi)/T^5 (15*pi)/(4*t^4) (-5*pi)/(2*T^3) 0 0 0];
+q1d = polyval(q1dcoeff,t);
+q2d = polyval(q2dcoeff,t);
+
+dq1dcoeff = polyder(q1dcoeff);
+dq2dcoeff = polyder(q2dcoeff);
+dq1d = polyval(dq1dcoeff);
+dq2d = polyval(dq2dcoeff);
+
+ddq1dcoeff = polyder(dq1dcoeff);
+ddq2dcoeff = polyder(dq2dcoeff);
+ddq1d = polyval(ddq1dcoeff);
+ddq2d = polyval(ddq2dcoeff);
+</pre><h2 id="8">Error</h2><pre class="codeinput"><span class="comment">%%%%%%%%%%% Calculate the error (e) %%%%%%%%%%%</span>
+</pre><h2 id="9">Feedback Torque</h2><pre class="codeinput"><span class="comment">%%%%%%%%%%% Choose values for Kp and Kd %%%%%%%%%%%</span>
+<span class="comment">%%%%%%%%%%% Calculate the feedback torque (tauFB) %%%%%%%%%%%</span>
+</pre><h2 id="10">Feedforward Torque</h2><pre class="codeinput"><span class="comment">%%%%%%%%%%% Calculate the feedforward torque (tauFF) %%%%%%%%%%%</span>
+</pre><h2 id="11">Total Torque</h2><pre class="codeinput"><span class="comment">%%%%%%%%%%% Calculate the total torque (tau) %%%%%%%%%%%</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [tau, tauFF, tauFB, e, qd] = calculateTorque_student(t,y)
+% Calculate torque for the two link robot using computed torque control
+% Inputs:
+% ~ t: current time, a scalar
+% ~ y: current state, a 4 x 1 vector, [q1 q2 dq1 dq2]
+% Ouputs:
+% ~ tau: total joint torque
+% ~ tauFF: the feedforward portion of the joint torque
+% ~ taueFB: the feedback portion of the joint torque
+% ~ e: the error
+% ~ qd: desired joint angles
+
+%% Set up
+L1 = 1;
+L2 = L1;
+p1 = L1/2;
+p2 = L2/2;
+m1 = 12;
+m2 = m1;
+I1 = 1;
+I2 = I1;
+g = 9.8;
+T = 2; %sec
+
+q1  = y(1);
+q2  = y(2);
+dq1 = y(3);
+dq2 = y(4);
+
+%%%%%%%%%%% Define q and dq %%%%%%%%%%%
+
+%% Mass matrix
+m11 = m2*L1^2 + 2*m2*cos(q2)*L1*p2 + m1*p1^2 + m2*p2^2 + I1 + I2;
+m12 = m2*p2^2 + L1*m2*cos(q2)*p2 + I2;
+m22 = m2*p2^2 + I2;
+
+M = [m11 m12; m12 m22];
+
+%% C matrix
+c11 = -2*L1*dq2*m2*p2*sin(q2);
+c12 = -L1*dq2*m2*p2*sin(q2);
+c21 = (L1*m2*p2*sin(q2)*(2*dq1 - dq2))/2;
+c22 = (L1*dq1*m2*p2*sin(q2))/2;
+
+C = [c11 c12; c21 c22];
+
+%% Gravity vector
+G = [ 
+ g*m2*(p2*cos(q1 + q2) + L1*cos(q1)) + g*m1*p1*cos(q1)
+                                  g*m2*p2*cos(q1 + q2)];
+                              
+%% Desired motion
+%%%%%%%%%%% Equations describing the desired joint position (qd), velocity
+%%%%%%%%%%% (dqd), and acceleration (ddqd) %%%%%%%%%%%
+q1d = (3*pi/T^5)*t.^5 - (15*pi/2*T^4)*t.^4 + (5*pi/T^3)*t.^3;
+q2d = -(3*pi/2*T^5)*t.^5 + (15*pi/4*T^4)*t.^4 - (5*pi/2*T^3)*t.^3;
+
+q1dcoeff = [(3*pi)/T^5 (-15*pi)/(2*T^4) (5*pi)/T^3 0 0 0];
+q2dcoeff = [(-3*pi)/T^5 (15*pi)/(4*t^4) (-5*pi)/(2*T^3) 0 0 0];
+q1d = polyval(q1dcoeff,t);
+q2d = polyval(q2dcoeff,t);
+
+dq1dcoeff = polyder(q1dcoeff);
+dq2dcoeff = polyder(q2dcoeff);
+dq1d = polyval(dq1dcoeff);
+dq2d = polyval(dq2dcoeff);
+
+ddq1dcoeff = polyder(dq1dcoeff);
+ddq2dcoeff = polyder(dq2dcoeff);
+ddq1d = polyval(ddq1dcoeff);
+ddq2d = polyval(ddq2dcoeff);
+
+%% Error
+%%%%%%%%%%% Calculate the error (e) %%%%%%%%%%%
+
+%% Feedback Torque
+%%%%%%%%%%% Choose values for Kp and Kd %%%%%%%%%%%
+%%%%%%%%%%% Calculate the feedback torque (tauFB) %%%%%%%%%%%
+
+%% Feedforward Torque
+%%%%%%%%%%% Calculate the feedforward torque (tauFF) %%%%%%%%%%%
+
+%% Total Torque
+%%%%%%%%%%% Calculate the total torque (tau) %%%%%%%%%%%
+
+
+##### SOURCE END #####
+--></body></html>
