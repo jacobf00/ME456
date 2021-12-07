@@ -1,0 +1,337 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HW9</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-12-07"><meta name="DC.source" content="HW9.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Set up</a></li><li><a href="#3">Velocity</a></li><li><a href="#4">Kinetic energy</a></li><li><a href="#5">1a) Find mass matrix</a></li><li><a href="#6">1b) Find C matrix</a></li><li><a href="#7">Fill in C Matrix</a></li><li><a href="#8">1c) Find G vector</a></li><li><a href="#9">Fill in G vector</a></li><li><a href="#10">Plug in q and dq to check if correct</a></li></ul></div><pre class="codeinput">clc,clear,close
+</pre><h2 id="2">Set up</h2><pre class="codeinput">syms <span class="string">q1</span> <span class="string">q2</span> <span class="string">real</span>
+syms <span class="string">a1</span> <span class="string">a2</span> <span class="string">p1</span> <span class="string">p2</span> <span class="string">real</span>
+syms <span class="string">m1</span> <span class="string">m2</span> <span class="string">I1</span> <span class="string">I2</span> <span class="string">real</span>
+syms <span class="string">dq1</span> <span class="string">dq2</span> <span class="string">real</span>
+syms <span class="string">r1</span> <span class="string">r2</span> <span class="string">real</span>
+syms <span class="string">g</span> <span class="string">real</span>
+T01 = modDH(0,0,q1,0);
+T12 = modDH(pi/2,0,0,q2);
+T23 = modDH(0,a2,0,0);
+T02 = T01*T12;
+
+q = [q1 q2]';
+<span class="comment">% Position vectors from link frame origin to link COM in link frame</span>
+r1g = [
+    0
+    0
+    -q1/2];
+r2g = [
+    a2/2
+    0
+    0];
+
+<span class="comment">% Inertia matrix</span>
+I1 = [
+ 1/12*m1*(r1^2 + a1^2) 0 0
+ 0 1/12*m1*(r1^2 + a1^2) 0
+ 0 0 1/6*m1*r1^2];
+
+I2 = [
+ 1/6*m2*r2^2 0 0
+ 0 1/12*m2*(r2^2 + a2^2) 0
+ 0 0 1/12*m2*(r2^2 + a2^2)];
+</pre><h2 id="3">Velocity</h2><pre class="codeinput">dq = [dq1; dq2];
+
+<span class="comment">% Velocity of link 1 frame</span>
+v11 = [0 0 dq1]';
+w11 = [0 0 0]';
+
+v1G1 = v11 + cross(w11,r1g);
+
+<span class="comment">% Velocity of link 2 frame</span>
+v22 = T12(1:3,1:3)'*(v11 + cross(w11,T12(1:3,4)));
+w22 = T12(1:3,1:3)'*w11 + [0 0 dq2]';
+
+v2G2 = v22 + cross(w22,r2g);
+<span class="comment">%%%%%%%%% ADD CODE HERE %%%%%%%%%</span>
+</pre><h2 id="4">Kinetic energy</h2><pre class="codeinput"><span class="comment">%%%%%%%%% ADD CODE HERE %%%%%%%%%</span>
+
+KE = collect(simplify(expand((1/2)*(m1*(v1G1'*v1G1) + w11'*I1*w11 + m2*(v2G2'*v2G2) + w22'*I2*w22))),dq);
+</pre><h2 id="5">1a) Find mass matrix</h2><pre class="codeinput">m11 = m1/2 + m2/2;
+m12 = a2*m2*cos(q2)/2;
+m21 = m12;
+m22 = ((m2*a2^2)/6 + (m2*r2^2)/24);
+
+M = [2*m11,m12;
+     m21,2*m22]
+
+<span class="comment">%Check</span>
+disp(<span class="string">'If ans = 0, M is correct'</span>)
+Km = 1/2*dq'*M*dq;
+simplify(expand(Km-KE))
+</pre><pre class="codeoutput"> 
+M =
+ 
+[          m1 + m2,          (a2*m2*cos(q2))/2]
+[(a2*m2*cos(q2))/2, (m2*a2^2)/3 + (m2*r2^2)/12]
+ 
+If ans = 0, M is correct
+ 
+ans =
+ 
+0
+ 
+</pre><h2 id="6">1b) Find C matrix</h2><pre class="codeinput">C = sym(zeros(2,2));
+<span class="keyword">for</span> k=1:2
+    <span class="keyword">for</span> j=1:2
+        <span class="keyword">for</span> i=1:2
+            C(k,j) = simplify(C(k,j) + (diff(M(k,j),q(i)) - 1/2*diff(M(i,j),q(k)))*dq(i));
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+C
+</pre><pre class="codeoutput"> 
+C =
+ 
+[                     0, -(a2*dq2*m2*sin(q2))/2]
+[-(a2*dq2*m2*sin(q2))/4,  (a2*dq1*m2*sin(q2))/4]
+ 
+</pre><h2 id="7">Fill in C Matrix</h2><pre class="codeinput">c11 = 0;
+c12 = -(a2*dq2*m2*sin(q2))/2;
+c21 = -(a2*dq2*m2*sin(q2))/4;
+c22 = (a2*dq1*m2*sin(q2))/4;
+C = [c11 c12; c21 c22];
+</pre><h2 id="8">1c) Find G vector</h2><pre class="codeinput"><span class="comment">%convert COM vectors to frame 0</span>
+r1g0 = T01(1:3,1:3)*r1g + T01(1:3,4);
+r2g0 = T02(1:3,1:3)*r2g + T02(1:3,4);
+
+<span class="comment">% Potential Energy</span>
+V = m1*g*r1g0(3) + m2*g*r2g0(3)
+
+G = sym(zeros(2,1));
+<span class="keyword">for</span> k=1:2
+ G(k) = simplify(diff(V,q(k)));
+<span class="keyword">end</span>
+G
+</pre><pre class="codeoutput"> 
+V =
+ 
+(g*m1*q1)/2 + g*m2*(q1 + (a2*sin(q2))/2)
+ 
+ 
+G =
+ 
+  (g*(m1 + 2*m2))/2
+(a2*g*m2*cos(q2))/2
+ 
+</pre><h2 id="9">Fill in G vector</h2><pre class="codeinput">G =[
+  (g*(m1 + 2*m2))/2
+(a2*g*m2*cos(q2))/2];
+</pre><h2 id="10">Plug in q and dq to check if correct</h2><pre class="codeinput">Mcheck = round(subs(M,[m1 m2 a2 q2 r2], [30 26 .7 -3.56 .1]),2)
+Ccheck = round(subs(C,[m2 a2 q2 dq1 dq2], [26 .7 -3.56 -.38 .67]),2)
+Gcheck = round(subs(G,[g m1 m2 a2 q2], [9.81 30 26 .7 -3.56]),2)
+</pre><pre class="codeoutput"> 
+Mcheck =
+ 
+[ 56.0, -8.32]
+[-8.32,  4.27]
+ 
+ 
+Ccheck =
+ 
+[    0, -2.48]
+[-1.24,  -0.7]
+ 
+ 
+Gcheck =
+ 
+402.21
+-81.57
+ 
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc,clear,close
+
+%% Set up
+syms q1 q2 real
+syms a1 a2 p1 p2 real
+syms m1 m2 I1 I2 real
+syms dq1 dq2 real
+syms r1 r2 real
+syms g real
+T01 = modDH(0,0,q1,0);
+T12 = modDH(pi/2,0,0,q2);
+T23 = modDH(0,a2,0,0);
+T02 = T01*T12;
+
+q = [q1 q2]';
+% Position vectors from link frame origin to link COM in link frame
+r1g = [
+    0
+    0
+    -q1/2];
+r2g = [
+    a2/2
+    0
+    0];
+
+% Inertia matrix
+I1 = [
+ 1/12*m1*(r1^2 + a1^2) 0 0
+ 0 1/12*m1*(r1^2 + a1^2) 0
+ 0 0 1/6*m1*r1^2];
+
+I2 = [
+ 1/6*m2*r2^2 0 0
+ 0 1/12*m2*(r2^2 + a2^2) 0
+ 0 0 1/12*m2*(r2^2 + a2^2)];
+
+%% Velocity
+
+dq = [dq1; dq2];
+
+% Velocity of link 1 frame
+v11 = [0 0 dq1]';
+w11 = [0 0 0]';
+
+v1G1 = v11 + cross(w11,r1g);
+
+% Velocity of link 2 frame
+v22 = T12(1:3,1:3)'*(v11 + cross(w11,T12(1:3,4)));
+w22 = T12(1:3,1:3)'*w11 + [0 0 dq2]';
+
+v2G2 = v22 + cross(w22,r2g);
+%%%%%%%%% ADD CODE HERE %%%%%%%%%
+
+%% Kinetic energy
+
+
+%%%%%%%%% ADD CODE HERE %%%%%%%%%
+
+KE = collect(simplify(expand((1/2)*(m1*(v1G1'*v1G1) + w11'*I1*w11 + m2*(v2G2'*v2G2) + w22'*I2*w22))),dq);
+
+%% 1a) Find mass matrix
+
+m11 = m1/2 + m2/2;
+m12 = a2*m2*cos(q2)/2;
+m21 = m12;
+m22 = ((m2*a2^2)/6 + (m2*r2^2)/24);
+
+M = [2*m11,m12;
+     m21,2*m22]
+ 
+%Check 
+disp('If ans = 0, M is correct')
+Km = 1/2*dq'*M*dq;
+simplify(expand(Km-KE))
+
+%% 1b) Find C matrix
+
+C = sym(zeros(2,2));
+for k=1:2
+    for j=1:2
+        for i=1:2
+            C(k,j) = simplify(C(k,j) + (diff(M(k,j),q(i)) - 1/2*diff(M(i,j),q(k)))*dq(i));
+        end
+    end
+end
+C
+
+%% Fill in C Matrix
+
+c11 = 0;
+c12 = -(a2*dq2*m2*sin(q2))/2;
+c21 = -(a2*dq2*m2*sin(q2))/4;
+c22 = (a2*dq1*m2*sin(q2))/4;
+C = [c11 c12; c21 c22];
+
+%% 1c) Find G vector
+
+%convert COM vectors to frame 0
+r1g0 = T01(1:3,1:3)*r1g + T01(1:3,4);
+r2g0 = T02(1:3,1:3)*r2g + T02(1:3,4);
+
+% Potential Energy
+V = m1*g*r1g0(3) + m2*g*r2g0(3)
+
+G = sym(zeros(2,1));
+for k=1:2
+ G(k) = simplify(diff(V,q(k)));
+end
+G
+
+%% Fill in G vector
+
+G =[
+  (g*(m1 + 2*m2))/2
+(a2*g*m2*cos(q2))/2];
+
+%% Plug in q and dq to check if correct
+
+Mcheck = round(subs(M,[m1 m2 a2 q2 r2], [30 26 .7 -3.56 .1]),2)
+Ccheck = round(subs(C,[m2 a2 q2 dq1 dq2], [26 .7 -3.56 -.38 .67]),2)
+Gcheck = round(subs(G,[g m1 m2 a2 q2], [9.81 30 26 .7 -3.56]),2)
+
+
+##### SOURCE END #####
+--></body></html>
