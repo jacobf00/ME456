@@ -1,0 +1,78 @@
+function [dy, K, V] = ODEfun_Project3(t,y)
+
+%% Set up
+L1 = 1;
+L2 = L1;
+nump1 = -.02;
+nump2 = .295;
+nump3 = .342;
+nump4 = -.05;
+nump5 = .025;
+numm1 = 12;
+m2 = numm1;
+I1 = 1;
+I2 = I1;
+g = 9.81;
+a0 = 0;
+a1 = 0;
+a2 = .425;
+a3 = .392;
+numm1 = 3.7;
+m2 = 8.393;
+m3 = 2.275;
+m4 = 2.626;
+% r1 = .16;
+% r2 = .1;
+
+q1  = y(1);
+q2  = y(2);
+q3 = y(3);
+q4 = y(4);
+dq1 = y(5);
+dq2 = y(6);
+dq3 = y(7);
+dq4 = y(8);
+
+%% Mass matrix
+%load sybolic matrix
+load('EOMs.mat','M')
+
+M = subs(M,[a1 a2 a3 numm1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4],[a1 a2 a3 numm1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4]);
+
+% M = subs(M,symvar(M),symvar(M));
+
+
+%% C matrix
+load('EOMs.mat','C')
+
+C = subs(M,[a1 a2 a3 numm1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4],[a1 a2 a3 numm1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4]);
+
+%% Gravity vector
+load('EOMs.mat','G')
+
+G = subs(M,[a1 a2 a3 numm1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4],[a1 a2 a3 numm1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4]);
+
+
+
+%% Torque
+tau = zeros(2,1);
+% tau = calculateTorque(t,y);
+
+%% EOM
+dq = y(length(y)/2 + 1:length(y));
+ddq = M\(tau-C*dq-G);
+
+dy = [
+    dq
+    ddq];
+
+%% Kinetic energy
+K = 1/2*dq'*M*dq;
+
+%% Potential energy
+
+load('EOMs','V')
+
+V = subs(V,[a1 a2 a3 numm1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4],[a1 a2 a3 numm1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4]);
+
+

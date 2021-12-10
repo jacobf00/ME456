@@ -56,7 +56,7 @@ v2G2 = v22 + cross(w22,r2g);
 
 %%%%%%%%% ADD CODE HERE %%%%%%%%%
 
-KE = collect(simplify(expand((1/2)*(m1*(v1G1'*v1G1) + w11'*I1*w11 + m2*(v2G2'*v2G2) + w22'*I2*w22))),dq)
+KE = collect(simplify(expand((1/2)*(m1*(v1G1'*v1G1) + w11'*I1*w11 + m2*(v2G2'*v2G2) + w22'*I2*w22))),dq);
 
 %% 1a) Find mass matrix
 
@@ -69,10 +69,11 @@ M = [2*m11,m12;
      m21,2*m22]
  
 %Check 
+disp('If ans = 0, M is correct')
 Km = 1/2*dq'*M*dq;
 simplify(expand(Km-KE))
 
-%% Find C matrix
+%% 1b) Find C matrix
 
 C = sym(zeros(2,2));
 for k=1:2
@@ -90,16 +91,16 @@ c11 = 0;
 c12 = -(a2*dq2*m2*sin(q2))/2;
 c21 = -(a2*dq2*m2*sin(q2))/4;
 c22 = (a2*dq1*m2*sin(q2))/4;
-C = [c11 c12; c21 c22]
+C = [c11 c12; c21 c22];
 
-%% Find G vector
+%% 1c) Find G vector
 
 %convert COM vectors to frame 0
 r1g0 = T01(1:3,1:3)*r1g + T01(1:3,4);
 r2g0 = T02(1:3,1:3)*r2g + T02(1:3,4);
 
 % Potential Energy
-V = m1*g*r1g0(3) + m2*g*r2g0(3);
+V = m1*g*r1g0(3) + m2*g*r2g0(3)
 
 G = sym(zeros(2,1));
 for k=1:2
@@ -113,9 +114,9 @@ G =[
   (g*(m1 + 2*m2))/2
 (a2*g*m2*cos(q2))/2];
 
-%% Plug in q and dq
+%% Plug in q and dq to check if correct
 
-Msol = round(subs(M,[m1 m2 a2 q2 r2], [30 26 .7 -3.56 .1]),2)
-Csol = round(subs(C,[m2 a2 q2 dq1 dq2], [26 .7 -3.56 -.38 .67]),2)
-Gsol = round(subs(G,[g m1 
+Mcheck = round(subs(M,[m1 m2 a2 q2 r2], [30 26 .7 -3.56 .1]),2)
+Ccheck = round(subs(C,[m2 a2 q2 dq1 dq2], [26 .7 -3.56 -.38 .67]),2)
+Gcheck = round(subs(G,[g m1 m2 a2 q2], [9.81 30 26 .7 -3.56]),2)
 
