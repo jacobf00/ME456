@@ -1,32 +1,42 @@
 function [dy, K, V] = ODEfun_Project3(t,y)
 
 %% Set up
-syms a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4 real
+% syms a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4 real
+% load('EOMs.mat')
 L1 = 1;
 L2 = L1;
-nump1 = -.02;
-nump2 = .295;
-nump3 = .342;
-nump4 = -.05;
-nump5 = .025;
+
+p1 = -.02;
+p2 = .295;
+p3 = .342;
+p4 = -.05;
+p5 = .025;
+
+d1 = .163;
+d2 = .138;
+d3 = -.131;
+d4 = .127;
+
 I1 = 1;
 I2 = I1;
 g = 9.81;
+
 a0 = 0;
-numa1 = 0;
-numa2 = .425;
-numa3 = .392;
-numm1 = 3.7;
-numm2 = 8.393;
-numm3 = 2.275;
-numm4 = 2.626;
+a1 = 0;
+a2 = .425;
+a3 = .392;
+
+m1 = 3.7;
+m2 = 8.393;
+m3 = 2.275;
+m4 = 2.626;
 % r1 = .16;
 % r2 = .1;
 
-numq1  = y(1);
-numq2  = y(2);
-numq3 = y(3);
-numq4 = y(4);
+q1  = y(1);
+q2  = y(2);
+q3 = y(3);
+q4 = y(4);
 dq1 = y(5);
 dq2 = y(6);
 dq3 = y(7);
@@ -36,22 +46,33 @@ dq4 = y(8);
 %load sybolic matrix
 % load('EOMs.mat','M')
 
-M = subs(M,[a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4],[numa1 numa2 numa3 numm1 numm2 numm3 numm4 nump1 nump2 nump3 nump4 nump5 numq1 numq2 numq3 numq4]);
+% M = subs(M,[a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4],[numa1 numa2 numa3 numm1 numm2 numm3 numm4 nump1 nump2 nump3 nump4 nump5 numq1 numq2 numq3 numq4]);
 
 % M = subs(M,symvar(M),symvar(M));
 
+M = [ (1011*cos(2*q2))/10000 + cos(2*q2 + 2*q3 + 2*q4)/250 + (223*cos(2*q2 + 2*q3))/10000 + (a2^2*m3)/2 + (a2^2*m4)/2 + (a3^2*m4)/2 + d2^2*m2 + d2^2*m3 + d2^2*m4 + d3^2*m3 + d3^2*m4 + d4^2*m4 + (m2*p2^2)/2 + (m3*p3^2)/2 + (m4*p4^2)/2 + m4*p5^2 + 2*d2*d3*m3 + 2*d2*d3*m4 + 2*d2*d4*m4 + 2*d3*d4*m4 + 2*d2*m4*p5 + 2*d3*m4*p5 + 2*d4*m4*p5 + (a2^2*m3*cos(2*q2))/2 + (a2^2*m4*cos(2*q2))/2 + (m2*p2^2*cos(2*q2))/2 - (m4*p4^2*cos(2*q2 + 2*q3 + 2*q4))/2 + (a3^2*m4*cos(2*q2 + 2*q3))/2 + (m3*p3^2*cos(2*q2 + 2*q3))/2 - a2*m4*p4*sin(2*q2 + q3 + q4) - a2*m4*p4*sin(q3 + q4) + a2*a3*m4*cos(q3) + a2*m3*p3*cos(q3) - a3*m4*p4*sin(q4) - a3*m4*p4*sin(2*q2 + 2*q3 + q4) + a2*a3*m4*cos(2*q2 + q3) + a2*m3*p3*cos(2*q2 + q3) + 371/2500, - a3*d2*m4*sin(q2 + q3) - a3*d3*m4*sin(q2 + q3) - a3*d4*m4*sin(q2 + q3) - a3*m4*p5*sin(q2 + q3) - d2*m3*p3*sin(q2 + q3) - d3*m3*p3*sin(q2 + q3) - a2*d2*m3*sin(q2) - a2*d2*m4*sin(q2) - a2*d3*m3*sin(q2) - a2*d3*m4*sin(q2) - a2*d4*m4*sin(q2) - a2*m4*p5*sin(q2) - d2*m2*p2*sin(q2) - d2*m4*p4*cos(q2 + q3 + q4) - d3*m4*p4*cos(q2 + q3 + q4) - d4*m4*p4*cos(q2 + q3 + q4) - m4*p4*p5*cos(q2 + q3 + q4), - a3*d2*m4*sin(q2 + q3) - a3*d3*m4*sin(q2 + q3) - a3*d4*m4*sin(q2 + q3) - a3*m4*p5*sin(q2 + q3) - d2*m3*p3*sin(q2 + q3) - d3*m3*p3*sin(q2 + q3) - d2*m4*p4*cos(q2 + q3 + q4) - d3*m4*p4*cos(q2 + q3 + q4) - d4*m4*p4*cos(q2 + q3 + q4) - m4*p4*p5*cos(q2 + q3 + q4), - d2*m4*p4*cos(q2 + q3 + q4) - d3*m4*p4*cos(q2 + q3 + q4) - d4*m4*p4*cos(q2 + q3 + q4) - m4*p4*p5*cos(q2 + q3 + q4)
+                                                                                                                                                                                                                                                                                                                             - a3*d2*m4*sin(q2 + q3) - a3*d3*m4*sin(q2 + q3) - a3*d4*m4*sin(q2 + q3) - a3*m4*p5*sin(q2 + q3) - d2*m3*p3*sin(q2 + q3) - d3*m3*p3*sin(q2 + q3) - a2*d2*m3*sin(q2) - a2*d2*m4*sin(q2) - a2*d3*m3*sin(q2) - a2*d3*m4*sin(q2) - a2*d4*m4*sin(q2) - a2*m4*p5*sin(q2) - d2*m2*p2*sin(q2) - d2*m4*p4*cos(q2 + q3 + q4) - d3*m4*p4*cos(q2 + q3 + q4) - d4*m4*p4*cos(q2 + q3 + q4) - m4*p4*p5*cos(q2 + q3 + q4),                                                                                                                                                                                                                                           a2^2*m3 + a2^2*m4 + a3^2*m4 + m2*p2^2 + m3*p3^2 + m4*p4^2 - 2*a2*m4*p4*sin(q3 + q4) + 2*a2*a3*m4*cos(q3) + 2*a2*m3*p3*cos(q3) - 2*a3*m4*p4*sin(q4) + 1337/5000,                                                                                                                                           m4*a3^2 - 2*m4*sin(q4)*a3*p4 + a2*m4*cos(q3)*a3 + m3*p3^2 + a2*m3*cos(q3)*p3 + m4*p4^2 - a2*m4*sin(q3 + q4)*p4 + 287/5000,                                                          m4*p4^2 - a2*m4*p4*sin(q3 + q4) - a3*m4*p4*sin(q4) + 7/625
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                  - a3*d2*m4*sin(q2 + q3) - a3*d3*m4*sin(q2 + q3) - a3*d4*m4*sin(q2 + q3) - a3*m4*p5*sin(q2 + q3) - d2*m3*p3*sin(q2 + q3) - d3*m3*p3*sin(q2 + q3) - d2*m4*p4*cos(q2 + q3 + q4) - d3*m4*p4*cos(q2 + q3 + q4) - d4*m4*p4*cos(q2 + q3 + q4) - m4*p4*p5*cos(q2 + q3 + q4),                                                                                                                                                                                                                                                                                m4*a3^2 - 2*m4*sin(q4)*a3*p4 + a2*m4*cos(q3)*a3 + m3*p3^2 + a2*m3*cos(q3)*p3 + m4*p4^2 - a2*m4*sin(q3 + q4)*p4 + 287/5000,                                                                                                                                                                                                         m4*a3^2 - 2*m4*sin(q4)*a3*p4 + m3*p3^2 + m4*p4^2 + 287/5000,                                                                                  m4*p4^2 - a3*m4*sin(q4)*p4 + 7/625
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  - d2*m4*p4*cos(q2 + q3 + q4) - d3*m4*p4*cos(q2 + q3 + q4) - d4*m4*p4*cos(q2 + q3 + q4) - m4*p4*p5*cos(q2 + q3 + q4),                                                                                                                                                                                                                                                                                                                                               m4*p4^2 - a2*m4*p4*sin(q3 + q4) - a3*m4*p4*sin(q4) + 7/625,                                                                                                                                                                                                                                  m4*p4^2 - a3*m4*sin(q4)*p4 + 7/625,                                                                                                     m4*p4^2 + 7/625];
 
 %% C matrix
 % load('EOMs.mat','C')
 
-C = subs(C,[a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4],[numa1 numa2 numa3 numm1 numm2 numm3 numm4 nump1 nump2 nump3 nump4 nump5 numq1 numq2 numq3 numq4]);
+% C = subs(C,[a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4],[a1 a2 a3 m1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4]);
 
+C = [                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           - dq2*((1011*sin(2*q2))/5000 + sin(2*q2 + 2*q3 + 2*q4)/125 + (223*sin(2*q2 + 2*q3))/5000 + a3^2*m4*sin(2*q2 + 2*q3) + m3*p3^2*sin(2*q2 + 2*q3) + a2^2*m3*sin(2*q2) + a2^2*m4*sin(2*q2) + m2*p2^2*sin(2*q2) - m4*p4^2*sin(2*q2 + 2*q3 + 2*q4) + 2*a2*m4*p4*cos(2*q2 + q3 + q4) + 2*a3*m4*p4*cos(2*q2 + 2*q3 + q4) + 2*a2*a3*m4*sin(2*q2 + q3) + 2*a2*m3*p3*sin(2*q2 + q3)) - dq3*(sin(2*q2 + 2*q3 + 2*q4)/125 + (223*sin(2*q2 + 2*q3))/5000 + a3^2*m4*sin(2*q2 + 2*q3) + m3*p3^2*sin(2*q2 + 2*q3) - m4*p4^2*sin(2*q2 + 2*q3 + 2*q4) + a2*m4*p4*cos(2*q2 + q3 + q4) + a2*m4*p4*cos(q3 + q4) + 2*a3*m4*p4*cos(2*q2 + 2*q3 + q4) + a2*a3*m4*sin(q3) + a2*m3*p3*sin(q3) + a2*a3*m4*sin(2*q2 + q3) + a2*m3*p3*sin(2*q2 + q3)) - dq4*(sin(2*q2 + 2*q3 + 2*q4)/125 - m4*p4^2*sin(2*q2 + 2*q3 + 2*q4) + a2*m4*p4*cos(2*q2 + q3 + q4) + a2*m4*p4*cos(q3 + q4) + a3*m4*p4*cos(q4) + a3*m4*p4*cos(2*q2 + 2*q3 + q4)), d2*dq2*m4*p4*sin(q2 + q3 + q4) + d2*dq3*m4*p4*sin(q2 + q3 + q4) + d3*dq2*m4*p4*sin(q2 + q3 + q4) + d2*dq4*m4*p4*sin(q2 + q3 + q4) + d3*dq3*m4*p4*sin(q2 + q3 + q4) + d4*dq2*m4*p4*sin(q2 + q3 + q4) + d3*dq4*m4*p4*sin(q2 + q3 + q4) + d4*dq3*m4*p4*sin(q2 + q3 + q4) + d4*dq4*m4*p4*sin(q2 + q3 + q4) + dq2*m4*p4*p5*sin(q2 + q3 + q4) + dq3*m4*p4*p5*sin(q2 + q3 + q4) + dq4*m4*p4*p5*sin(q2 + q3 + q4) - a3*d2*dq2*m4*cos(q2 + q3) - a3*d2*dq3*m4*cos(q2 + q3) - a3*d3*dq2*m4*cos(q2 + q3) - a3*d3*dq3*m4*cos(q2 + q3) - a3*d4*dq2*m4*cos(q2 + q3) - a3*d4*dq3*m4*cos(q2 + q3) - a3*dq2*m4*p5*cos(q2 + q3) - a3*dq3*m4*p5*cos(q2 + q3) - d2*dq2*m3*p3*cos(q2 + q3) - d2*dq3*m3*p3*cos(q2 + q3) - d3*dq2*m3*p3*cos(q2 + q3) - d3*dq3*m3*p3*cos(q2 + q3) - a2*d2*dq2*m3*cos(q2) - a2*d2*dq2*m4*cos(q2) - a2*d3*dq2*m3*cos(q2) - a2*d3*dq2*m4*cos(q2) - a2*d4*dq2*m4*cos(q2) - a2*dq2*m4*p5*cos(q2) - d2*dq2*m2*p2*cos(q2),                                                                                                                                                dq4*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5) - (dq2 + dq3)*(a3*d2*m4*cos(q2 + q3) + a3*d3*m4*cos(q2 + q3) + a3*d4*m4*cos(q2 + q3) + a3*m4*p5*cos(q2 + q3) + d2*m3*p3*cos(q2 + q3) + d3*m3*p3*cos(q2 + q3) - d2*m4*p4*sin(q2 + q3 + q4) - d3*m4*p4*sin(q2 + q3 + q4) - d4*m4*p4*sin(q2 + q3 + q4) - m4*p4*p5*sin(q2 + q3 + q4)),                                                                 m4*p4*sin(q2 + q3 + q4)*(dq2 + dq3 + dq4)*(d2 + d3 + d4 + p5)
+ (1011*dq1*sin(2*q2))/10000 + (dq1*sin(2*q2 + 2*q3 + 2*q4))/250 + (223*dq1*sin(2*q2 + 2*q3))/10000 + (a2^2*dq1*m3*sin(2*q2))/2 + (a2^2*dq1*m4*sin(2*q2))/2 + (dq1*m2*p2^2*sin(2*q2))/2 - (dq1*m4*p4^2*sin(2*q2 + 2*q3 + 2*q4))/2 + (a3^2*dq1*m4*sin(2*q2 + 2*q3))/2 + (dq1*m3*p3^2*sin(2*q2 + 2*q3))/2 + a2*a3*dq1*m4*sin(2*q2 + q3) + a2*dq1*m3*p3*sin(2*q2 + q3) + (d2*dq2*m4*p4*sin(q2 + q3 + q4))/2 + (d2*dq3*m4*p4*sin(q2 + q3 + q4))/2 + (d3*dq2*m4*p4*sin(q2 + q3 + q4))/2 + (d2*dq4*m4*p4*sin(q2 + q3 + q4))/2 + (d3*dq3*m4*p4*sin(q2 + q3 + q4))/2 + (d4*dq2*m4*p4*sin(q2 + q3 + q4))/2 + (d3*dq4*m4*p4*sin(q2 + q3 + q4))/2 + (d4*dq3*m4*p4*sin(q2 + q3 + q4))/2 + (d4*dq4*m4*p4*sin(q2 + q3 + q4))/2 + (dq2*m4*p4*p5*sin(q2 + q3 + q4))/2 + (dq3*m4*p4*p5*sin(q2 + q3 + q4))/2 + (dq4*m4*p4*p5*sin(q2 + q3 + q4))/2 + a2*dq1*m4*p4*cos(2*q2 + q3 + q4) - (a3*d2*dq2*m4*cos(q2 + q3))/2 - (a3*d2*dq3*m4*cos(q2 + q3))/2 - (a3*d3*dq2*m4*cos(q2 + q3))/2 - (a3*d3*dq3*m4*cos(q2 + q3))/2 - (a3*d4*dq2*m4*cos(q2 + q3))/2 - (a3*d4*dq3*m4*cos(q2 + q3))/2 - (a3*dq2*m4*p5*cos(q2 + q3))/2 - (a3*dq3*m4*p5*cos(q2 + q3))/2 - (d2*dq2*m3*p3*cos(q2 + q3))/2 - (d2*dq3*m3*p3*cos(q2 + q3))/2 - (d3*dq2*m3*p3*cos(q2 + q3))/2 - (d3*dq3*m3*p3*cos(q2 + q3))/2 - (a2*d2*dq2*m3*cos(q2))/2 - (a2*d2*dq2*m4*cos(q2))/2 - (a2*d3*dq2*m3*cos(q2))/2 - (a2*d3*dq2*m4*cos(q2))/2 - (a2*d4*dq2*m4*cos(q2))/2 - (a2*dq2*m4*p5*cos(q2))/2 + a3*dq1*m4*p4*cos(2*q2 + 2*q3 + q4) - (d2*dq2*m2*p2*cos(q2))/2,                                                                                                                                                                                                                                      (a3*d2*dq1*m4*cos(q2 + q3))/2 - (d3*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (d4*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (dq1*m4*p4*p5*sin(q2 + q3 + q4))/2 - (d2*dq1*m4*p4*sin(q2 + q3 + q4))/2 + (a3*d3*dq1*m4*cos(q2 + q3))/2 + (a3*d4*dq1*m4*cos(q2 + q3))/2 + (a3*dq1*m4*p5*cos(q2 + q3))/2 - 2*a2*dq3*m4*p4*cos(q3 + q4) - 2*a2*dq4*m4*p4*cos(q3 + q4) + (d2*dq1*m3*p3*cos(q2 + q3))/2 + (d3*dq1*m3*p3*cos(q2 + q3))/2 + (a2*d2*dq1*m3*cos(q2))/2 + (a2*d2*dq1*m4*cos(q2))/2 + (a2*d3*dq1*m3*cos(q2))/2 + (a2*d3*dq1*m4*cos(q2))/2 + (a2*d4*dq1*m4*cos(q2))/2 + (a2*dq1*m4*p5*cos(q2))/2 - 2*a3*dq4*m4*p4*cos(q4) - 2*a2*a3*dq3*m4*sin(q3) + (d2*dq1*m2*p2*cos(q2))/2 - 2*a2*dq3*m3*p3*sin(q3), (a3*d2*dq1*m4*cos(q2 + q3))/2 - (d3*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (d4*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (dq1*m4*p4*p5*sin(q2 + q3 + q4))/2 - (d2*dq1*m4*p4*sin(q2 + q3 + q4))/2 + (a3*d3*dq1*m4*cos(q2 + q3))/2 + (a3*d4*dq1*m4*cos(q2 + q3))/2 + (a3*dq1*m4*p5*cos(q2 + q3))/2 - a2*dq3*m4*p4*cos(q3 + q4) - a2*dq4*m4*p4*cos(q3 + q4) + (d2*dq1*m3*p3*cos(q2 + q3))/2 + (d3*dq1*m3*p3*cos(q2 + q3))/2 - 2*a3*dq4*m4*p4*cos(q4) - a2*a3*dq3*m4*sin(q3) - a2*dq3*m3*p3*sin(q3),  - dq4*m4*p4*(a2*cos(q3 + q4) + a3*cos(q4)) - a2*dq3*m4*p4*cos(q3 + q4) - (dq1*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5))/2
+                                                                                                                                                                                                             (dq1*sin(2*q2 + 2*q3 + 2*q4))/250 + (223*dq1*sin(2*q2 + 2*q3))/10000 - (dq1*m4*p4^2*sin(2*q2 + 2*q3 + 2*q4))/2 + (a3^2*dq1*m4*sin(2*q2 + 2*q3))/2 + (dq1*m3*p3^2*sin(2*q2 + 2*q3))/2 + (a2*a3*dq1*m4*sin(2*q2 + q3))/2 + (a2*dq1*m3*p3*sin(2*q2 + q3))/2 + (d2*dq2*m4*p4*sin(q2 + q3 + q4))/2 + (d2*dq3*m4*p4*sin(q2 + q3 + q4))/2 + (d3*dq2*m4*p4*sin(q2 + q3 + q4))/2 + (d2*dq4*m4*p4*sin(q2 + q3 + q4))/2 + (d3*dq3*m4*p4*sin(q2 + q3 + q4))/2 + (d4*dq2*m4*p4*sin(q2 + q3 + q4))/2 + (d3*dq4*m4*p4*sin(q2 + q3 + q4))/2 + (d4*dq3*m4*p4*sin(q2 + q3 + q4))/2 + (d4*dq4*m4*p4*sin(q2 + q3 + q4))/2 + (dq2*m4*p4*p5*sin(q2 + q3 + q4))/2 + (dq3*m4*p4*p5*sin(q2 + q3 + q4))/2 + (dq4*m4*p4*p5*sin(q2 + q3 + q4))/2 + (a2*dq1*m4*p4*cos(2*q2 + q3 + q4))/2 - (a3*d2*dq2*m4*cos(q2 + q3))/2 - (a3*d2*dq3*m4*cos(q2 + q3))/2 - (a3*d3*dq2*m4*cos(q2 + q3))/2 - (a3*d3*dq3*m4*cos(q2 + q3))/2 - (a3*d4*dq2*m4*cos(q2 + q3))/2 - (a3*d4*dq3*m4*cos(q2 + q3))/2 + (a2*dq1*m4*p4*cos(q3 + q4))/2 - (a3*dq2*m4*p5*cos(q2 + q3))/2 - (a3*dq3*m4*p5*cos(q2 + q3))/2 - (d2*dq2*m3*p3*cos(q2 + q3))/2 - (d2*dq3*m3*p3*cos(q2 + q3))/2 - (d3*dq2*m3*p3*cos(q2 + q3))/2 - (d3*dq3*m3*p3*cos(q2 + q3))/2 + a3*dq1*m4*p4*cos(2*q2 + 2*q3 + q4) + (a2*a3*dq1*m4*sin(q3))/2 + (a2*dq1*m3*p3*sin(q3))/2,                                                                                                                                                                                                                                                                                                                                                   (a3*d2*dq1*m4*cos(q2 + q3))/2 - (d2*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (d3*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (d4*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (dq1*m4*p4*p5*sin(q2 + q3 + q4))/2 - dq4*((a2*m4*p4*cos(q3 + q4))/2 + 2*a3*m4*p4*cos(q4)) + (a3*d3*dq1*m4*cos(q2 + q3))/2 + (a3*d4*dq1*m4*cos(q2 + q3))/2 + (a3*dq1*m4*p5*cos(q2 + q3))/2 + a2*dq2*m4*p4*cos(q3 + q4) - (a2*dq3*m4*p4*cos(q3 + q4))/2 + (d2*dq1*m3*p3*cos(q2 + q3))/2 + (d3*dq1*m3*p3*cos(q2 + q3))/2 + a2*a3*dq2*m4*sin(q3) - (a2*a3*dq3*m4*sin(q3))/2 + a2*dq2*m3*p3*sin(q3) - (a2*dq3*m3*p3*sin(q3))/2,                 (a3*d2*dq1*m4*cos(q2 + q3))/2 - (d3*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (d4*dq1*m4*p4*sin(q2 + q3 + q4))/2 - (dq1*m4*p4*p5*sin(q2 + q3 + q4))/2 - (d2*dq1*m4*p4*sin(q2 + q3 + q4))/2 + (a3*d3*dq1*m4*cos(q2 + q3))/2 + (a3*d4*dq1*m4*cos(q2 + q3))/2 + (a3*dq1*m4*p5*cos(q2 + q3))/2 + (a2*dq2*m4*p4*cos(q3 + q4))/2 + (d2*dq1*m3*p3*cos(q2 + q3))/2 + (d3*dq1*m3*p3*cos(q2 + q3))/2 - 2*a3*dq4*m4*p4*cos(q4) + (a2*a3*dq2*m4*sin(q3))/2 + (a2*dq2*m3*p3*sin(q3))/2,                    (a2*dq2*m4*p4*cos(q3 + q4))/2 - (dq1*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5))/2 - a3*dq4*m4*p4*cos(q4)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               dq1*(sin(2*q2 + 2*q3 + 2*q4)/250 - (m4*p4^2*sin(2*q2 + 2*q3 + 2*q4))/2 + (a2*m4*p4*cos(2*q2 + q3 + q4))/2 + (a2*m4*p4*cos(q3 + q4))/2 + (a3*m4*p4*cos(q4))/2 + (a3*m4*p4*cos(2*q2 + 2*q3 + q4))/2) + (dq2*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5))/2 + (dq3*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5))/2 + (dq4*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5))/2,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             dq2*m4*p4*(a2*cos(q3 + q4) + a3*cos(q4)) - (dq4*m4*p4*(a2*cos(q3 + q4) + a3*cos(q4)))/2 - (dq3*m4*p4*(a2*cos(q3 + q4) - 2*a3*cos(q4)))/2 - (dq1*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5))/2,                                                                                                                                                                                                                                                                                                                           (dq2*m4*p4*(a2*cos(q3 + q4) + 2*a3*cos(q4)))/2 - (dq1*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5))/2 + a3*dq3*m4*p4*cos(q4) - (a3*dq4*m4*p4*cos(q4))/2, (dq2*m4*p4*(a2*cos(q3 + q4) + a3*cos(q4)))/2 - (dq1*m4*p4*sin(q2 + q3 + q4)*(d2 + d3 + d4 + p5))/2 + (a3*dq3*m4*p4*cos(q4))/2];
 %% Gravity vector
 % load('EOMs.mat','G')
 
-G = subs(G,[a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4],[numa1 numa2 numa3 numm1 numm2 numm3 numm4 nump1 nump2 nump3 nump4 nump5 numq1 numq2 numq3 numq4]);
+% G = subs(G,[a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4],[a1 a2 a3 m1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4]);
 
-
+G = [0;
+    g*(a2*m3*cos(q2) + a2*m4*cos(q2) + m2*p2*cos(q2) - m4*p4*sin(q2 + q3 + q4) + a3*m4*cos(q2 + q3) + m3*p3*cos(q2 + q3));
+                                                  g*m4*(a3*cos(q2 + q3) - p4*sin(q2 + q3 + q4)) + g*m3*p3*cos(q2 + q3);
+                                                                                            -g*m4*p4*sin(q2 + q3 + q4)];
 
 %% Torque
 tau = zeros(4,1);
@@ -72,6 +93,6 @@ K = 1/2*dq'*M*dq;
 
 % load('EOMs','V')
 
-V = subs(V,[a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4],[numa1 numa2 numa3 numm1 numm2 numm3 numm4 nump1 nump2 nump3 nump4 nump5 numq1 numq2 numq3 numq4]);
+% V = subs(V,[a1 a2 a3 m1 m2 m3 m4 p1 p2 p3 p4 p5 q1 q2 q3 q4],[a1 a2 a3 m1 m2 m3 m4 nump1 nump2 nump3 nump4 nump5 q1 q2 q3 q4]);
 
-
+V = g*m1*(d1 + p1) + g*m2*(d1 + p2*sin(q2)) + g*m4*(d1 + a3*(cos(q2)*sin(q3) + cos(q3)*sin(q2)) + a2*sin(q2) + p4*(cos(q4)*(cos(q2)*cos(q3) - sin(q2)*sin(q3)) - sin(q4)*(cos(q2)*sin(q3) + cos(q3)*sin(q2)))) + g*m3*(d1 + p3*(cos(q2)*sin(q3) + cos(q3)*sin(q2)) + a2*sin(q2));

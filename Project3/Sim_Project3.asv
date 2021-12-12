@@ -28,10 +28,14 @@ for i=1:length(t)
     [dy,K(i),V(i)] = ODEfun_Project3(t(i),y(i,:)');
 end
 
-figure(2)
-plot(t,V, t,K)
+figure
+hold on
+plot(t,V)
+plot(t,K)
+plot(t,K+V)
 xlabel('Time (s)')
 ylabel('Energy (J)')
-legend('V','K')
+hold off
+legend('V','K','Total')
 
 
